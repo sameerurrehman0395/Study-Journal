@@ -6,22 +6,6 @@ This repository serves as a structured record of what I learn, practice, and ref
 
 It is designed as both a **revision guide** for myself and a **knowledge-sharing resource** for anyone interested in technical learning, automation, and operations in modern IT environments.
 
----
-
-## 📁 Repository Structure
-
-study-journal/
-│
-├── RHEL/
-│
-├── sysops/
-│ 
-├── devops/
-│
-├── AI/
-│
-└── README.md
-
 
 ---
 
