@@ -21,8 +21,6 @@ It is designed as both a **revision guide** for myself and a **knowledge-sharing
 ## ✍️ Author’s Note
 
 The content in this repository consists of my personal notes developed during my study of the **AIOps EduQual Level 6** program at **Alnafi International School**.
-These notes have been refined and organized with the assistance of **ChatGPT (OpenAI)** to enhance structure, clarity, and readability.  
-They are intended purely for **self-learning, reflection, and knowledge sharing**.
 
 ---
 
@@ -32,8 +30,3 @@ They are intended purely for **self-learning, reflection, and knowledge sharing*
 🟢 **Active:** This journal is continuously updated as I progress through my AIOps journey.
 
 ---
-
-## 🧭 Future Topics to Add
-
-
-> _“Learning is a journey of iteration — understanding, breaking, fixing, and mastering.”_
