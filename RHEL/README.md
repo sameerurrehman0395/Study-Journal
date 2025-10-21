@@ -9,7 +9,9 @@ It includes notes from my learning on Linux fundamentals, networking, and common
 ## 🧠 Topics Covered
 
 ### 1. Linux Fundamentals
+       1. SJ-RHEL-01 · Linux Filesystem Structure
 
+       
 ### 2. Networking in Linux
 
 ### 3. Linux Services
