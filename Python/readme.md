@@ -11,9 +11,7 @@ It includes my structured learning notes from beginner to intermediate level, co
 
 ## Topics Covered
 
-SJ-Python-01-Variables, Types, String Formatting & Input
-
-
+       1. SJ-Python-01-Variables, Types, String Formatting & Input
 ---
 
 ## Learning Context
