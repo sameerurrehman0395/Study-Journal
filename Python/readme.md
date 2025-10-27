@@ -13,6 +13,10 @@ It includes my structured learning notes from beginner to intermediate level, co
 
        1. SJ-Python-01-Variables, Types, String Formatting & Input
 ---
+## Note
+SJ-Python_RawNotes_Complete_Archive.zip — this archive contains my original raw notes from the Python course.
+All material has already been refined, structured, and published in the SJ-Python Series. . 
+
 
 ## Learning Context
 
