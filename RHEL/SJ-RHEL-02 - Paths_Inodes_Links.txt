@@ -1,0 +1,340 @@
+# SJ-RHEL-02 — Paths, Inodes, and Links
+
+## 1. Introduction
+
+In Linux, every file, directory, and device lives within a **single unified structure** — a giant tree starting at the **root directory (/)**. Everything connects somewhere under `/`, whether it’s your wallpaper, a system log, or a keyboard driver.
+
+To navigate this tree confidently, you must understand three core concepts:
+
+| Concept | Purpose |
+|----------|----------|
+| Paths | How Linux locates files |
+| Inodes | How Linux identifies and tracks files |
+| Links | How multiple names can point to the same file |
+
+💡 **Analogy:**
+- **Paths** → Street addresses  
+- **Inodes** → Building registration numbers  
+- **Links** → Nicknames or shortcuts to the same building
+
+Once you master these, file permissions, ownership, and storage usage will make perfect sense.
+
+---
+
+## 2. Paths in Linux
+
+A **path** is simply the address of a file or folder — it tells Linux where the file lives in the filesystem.
+
+There are two types:
+- **Absolute paths** — Start from `/` (root) and show the full address.  
+- **Relative paths** — Start from your **current working directory**.
+
+---
+
+### 2.1 How to Read a Path
+
+Example:
+```
+/home/sameer/task1.txt
+```
+Linux reads it as:
+- Start at `/home` → the users’ directory.  
+- Then open the folder `sameer`.  
+- Inside it, find the file `task1.txt`.
+
+🧠 **Tip for beginners:** Read it as “root, which contains home, which contains sameer, which contains task1.txt.”  
+Every `/` separates a level in the filesystem tree.
+
+Example commands:
+```bash
+ls /home/sameer/task1
+cat /home/sameer/task1
+```
+
+---
+
+### 2.2 Absolute Path — The “Full Address”
+
+An **absolute path** tells Linux the exact location of a file from the root directory.
+
+Example:
+```bash
+cat /home/sameer/task1.txt
+```
+This command works no matter where you are in the system because it starts from `/`.
+
+✅ **Key takeaway:** Absolute paths are *global truths* — they always work, regardless of your current location.
+
+---
+
+### 2.3 Relative Path — “From Where I Stand”
+
+A **relative path** starts from your current directory, not `/`.
+
+| Path Type | Starts From | Example | Works Anywhere? | Notes |
+|------------|-------------|----------|------------------|--------|
+| Absolute | Root `/` | /home/sameer/docs/task1.txt | ✅ Yes | Full address from root |
+| Relative | Current directory `.` | ../reports/file.txt | ❌ No | Depends on current `pwd` |
+
+Example commands:
+```bash
+cd sameer
+ls task1.txt
+cat ../file.txt
+```
+
+`.` → current directory  
+`..` → parent directory  
+
+**Tip:** Use relative paths in scripts — they make your code portable across systems.
+
+---
+
+## 3. Inodes — The Hidden Identity of Files
+
+An **inode (index node)** is a unique data record that stores everything about a file *except* its name and content.
+
+Think of an inode as a file’s ID card — the name might change, but the ID number stays the same.
+
+**Inode = Metadata + Disk Pointers**  
+**Directory = Name pointing to an inode number**
+
+When you open a file, Linux:
+1. Finds its inode number from the directory.  
+2. Uses the inode to locate the file’s actual data blocks.
+
+---
+
+### 3.1 What an Inode Stores
+
+When you run `ls -l`, the output shows details stored inside the inode:
+
+| Field | Example | Meaning | Stored in Inode? |
+|--------|----------|----------|------------------|
+| -rw-r--r-- | Permissions | Who can read/write/execute | ✅ |
+| 1 | Link count | Number of hard links | ✅ |
+| sameer | Owner | User ID | ✅ |
+| sameer | Group | Group ID | ✅ |
+| 12 | File size | Size of content | ✅ |
+| Oct 22 17:53 | mtime | Last modified | ✅ |
+| task1.txt | Filename | Directory label | ❌ |
+
+Mnemonic: **POT-TIP**
+| Letter | Meaning | Description |
+|---------|----------|--------------|
+| P | Permissions | Who can read/write/execute |
+| O | Owner | UID and GID |
+| T | Timestamps | atime, mtime, ctime, btime |
+| T | Type | File, directory, or link |
+| I | Inode + Link Count | Unique ID, number of links |
+| B | Block Pointers | Addresses of data blocks |
+
+---
+
+### 3.2 Directory Entries
+
+A **directory** is a special file that maps filenames to inode numbers.
+
+Example:
+```
+/home/sameer
+ ├── task1.txt → inode 12345
+ └── task2.txt → inode 12346
+```
+
+So when you rename or move a file:
+- The inode (metadata + data) stays the same.  
+- Only the directory entry (name → inode mapping) changes.
+
+If two partitions use the same filesystem type (e.g., ext4), they still have different inode tables.
+
+Check directory type:
+```bash
+ls -ld /home/sameer
+```
+If it starts with `d`, it’s a directory.
+
+---
+
+### 3.3 Connecting Directory Entries and Data Blocks
+
+| Unit | Typical Size | Role |
+|------|---------------|------|
+| Sector | 512 bytes | Smallest physical unit |
+| Block | 4 KB | Smallest filesystem allocation unit |
+
+Each inode points to one or more data blocks, where actual file content resides:
+```
+Directory → Inode → Data Blocks
+```
+
+Example:
+```bash
+echo "A" > note.txt
+```
+Even a 1-byte file uses:
+- 1 inode (metadata)
+- 1 full block (4 KB)
+
+🧠 Every file consumes one inode + one or more blocks.
+
+---
+
+### 3.4 Where Inodes and Blocks Live
+
+When you format a partition with a filesystem (e.g., `mkfs.ext4`), Linux organizes the disk like this:
+
+| Component | Function |
+|------------|-----------|
+| Boot Block | Startup information |
+| Superblock | Filesystem control info (size, count, etc.) |
+| Inode Table | Database of all inodes |
+| Data Blocks | Store actual file content |
+
+**Analogy:**
+- Boot Block → Doorbell  
+- Superblock → Blueprint  
+- Inode Table → Address book  
+- Data Blocks → Rooms with content
+
+Check inode usage:
+```bash
+stat /home/sameer/task1.txt
+```
+
+**Key takeaway:**
+- `ls -l` shows logical size (12 bytes)
+- `stat` shows physical space used (4 KB)
+
+| Concept | Logical | Physical |
+|----------|----------|-----------|
+| File size | 12 bytes | Data written |
+| Blocks | 8 × 512 = 4096 bytes | Space allocated |
+
+Even a 12-byte file occupies one full 4 KB block.
+
+---
+
+## 4. What Are Links?
+
+Links let you access the same file via multiple names — like creating a desktop shortcut.
+
+Two types of links:
+- **Hard Links** — Point to the same inode.
+- **Soft (Symbolic) Links** — Point to a file path.
+
+| Analogy | Meaning |
+|----------|----------|
+| Hard Link | Another door to the same house |
+| Soft Link | A signboard pointing to the house |
+
+---
+
+### 4.1 Hard Links
+
+Characteristics:
+- Share the **same inode** as the target file.
+- Cannot link directories.
+- Must be in the same filesystem.
+- Survive even if the original file is deleted.
+
+Example:
+```bash
+ln task1.txt task1_hard.txt
+ls -li
+```
+Both share the same inode. Even if you remove the original:
+```bash
+rm task1.txt
+cat task1_hard.txt
+```
+Output still shows the file content.
+
+---
+
+### 4.2 Soft (Symbolic) Links
+
+Characteristics:
+- Have a **different inode** than the target.
+- Can cross filesystems.
+- Can link directories.
+- Break if the target file is deleted.
+
+Example:
+```bash
+ln -s task1.txt task1_soft.txt
+ls -l
+```
+You’ll see:
+```
+task1_soft.txt -> task1.txt
+```
+
+If you delete the target:
+```bash
+rm task1.txt
+cat task1_soft.txt
+```
+Output: `No such file or directory`
+
+---
+
+### 4.3 Difference Between Hard and Soft Links
+
+| Parameter | Hard Link | Soft Link |
+|------------|------------|------------|
+| Inode | Same as target | Different |
+| Filesystem | Same only | Can cross |
+| Directories | Not allowed | Allowed |
+| Points To | Data blocks | File path |
+| If Target Deleted | Link works | Link breaks |
+| Speed | Slightly faster | Slightly slower |
+
+**Use Case:**
+- Use hard links for reliability (same filesystem).  
+- Use soft links for flexibility (cross-directory or cross-partition).
+
+---
+
+### 4.4 Resolving Symbolic Links
+
+Sometimes symbolic links chain together:
+```
+/usr/bin/python3 → /etc/alternatives/python3 → /usr/bin/python3.11
+```
+
+Use:
+```bash
+readlink -f /usr/bin/python3
+```
+Or:
+```bash
+realpath /usr/bin/python3
+```
+
+| Command | Purpose |
+|----------|----------|
+| readlink -f | Follows all symbolic links |
+| realpath | Prints the final resolved absolute path |
+
+---
+
+### 4.5 Common Issues and Fixes
+
+| Problem | Reason | Fix |
+|----------|----------|-----|
+| Broken symlink | Target deleted or moved | Use `readlink -f` to trace and recreate |
+| Hard link fails | Target on another filesystem | Use a soft link instead |
+| `mv` didn’t change inode | Moved within same filesystem | Normal behavior |
+
+---
+
+## 5. Summary
+
+- **Hard links** = multiple names, one inode (durable)
+- **Soft links** = shortcut paths (flexible)
+- Inodes store metadata and link everything inside the filesystem.
+
+Once you understand **paths**, **inodes**, and **links**, Linux no longer feels like a pile of files — it becomes a living, structured network where every file has an identity, a home, and relationships.
+
+**Next Lesson → SJ-RHEL-03 — Ownership & Permissions**
