@@ -9,8 +9,8 @@ It includes notes from my learning on Linux fundamentals, networking, and common
 ## 🧠 Topics Covered
 
 ### 1. Linux Fundamentals
-       1. SJ-RHEL-01 · Linux Filesystem Structure
-       2. SJ-RHEL-02 · Paths, Inodes, and Links 
+       1. SJ-RHEL-01 - Linux Filesystem Structure
+       2. SJ-RHEL-02 - Paths, Inodes, Links 
        3. SJ-RHEL-03 – Ownership & Permissions
 ### 2. Networking in Linux
 
