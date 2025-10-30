@@ -12,6 +12,7 @@ It includes my structured learning notes from beginner to intermediate level, co
 ## Topics Covered
 
        1. SJ-Python-01-Variables, Types, String Formatting & Input
+       2. SJ-Python-02-Operators-Arithmetic, Comparison, Logical & More
 ---
 ## Note
 
