@@ -13,6 +13,7 @@ It includes my structured learning notes from beginner to intermediate level, co
 
        1. SJ-Python-01-Variables, Types, String Formatting & Input
        2. SJ-Python-02-Operators-Arithmetic, Comparison, Logical & More
+       3. SJ-Python-03-Python Conditional Statements
 ---
 ## Note
 
